@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: newsblur-web
+    repo: ciao-ale/NewsBlur
+    branch: main
+    env: docker
+    plan: standard
+    dockerfilePath: Dockerfile
+    # Optional env vars can be set in the Render dashboard or via the UI
+
+  - type: worker
+    name: newsblur-celery
+    repo: ciao-ale/NewsBlur
+    branch: main
+    env: docker
+    plan: standard
+    dockerfilePath: Dockerfile
+    # This service will run the celery worker using the Docker image
+    startCommand: celery -A newsblur_web.celeryapp worker --loglevel=INFO -Q new_feeds,push_feeds,update_feeds
+
+# Define managed databases/redis via Render UI or add them here if desired
+# databases:
+#   - name: newsblur-db
+#     engine: pg
+#     plan: starter
+#
+# redis:
+#   - name: newsblur-redis
+#     plan: starter
