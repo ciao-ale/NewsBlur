@@ -31,11 +31,10 @@ WORKDIR /app
 # Copy only requirements first to leverage Docker cache
 COPY requirements.txt /app/
 
-# Use a pip version known to work with older packages if necessary,
-# and install Cython early so packages that need it (pyzmq/gevent) can build.
-RUN python -m pip install --upgrade "pip<24.1" && \
+# Preinstall build-time Python tools so build isolation is not required for Cython-dependent builds
+RUN python -m pip install --upgrade "pip<24.1" setuptools wheel && \
     python -m pip install --no-cache-dir cython && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir --no-build-isolation -r requirements.txt
 
 # Copy the rest of the source
 COPY . /app
