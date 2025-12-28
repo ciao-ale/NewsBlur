@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     python3-dev \
     pkg-config \
+    autoconf \
+    automake \
+    libtool \
     libpq-dev \
     libxml2-dev \
     libxslt1-dev \
@@ -28,8 +31,10 @@ WORKDIR /app
 # Copy only requirements first to leverage Docker cache
 COPY requirements.txt /app/
 
-# Use a pip version known to work with older packages if necessary
+# Use a pip version known to work with older packages if necessary,
+# and install Cython early so packages that need it (pyzmq/gevent) can build.
 RUN python -m pip install --upgrade "pip<24.1" && \
+    python -m pip install --no-cache-dir cython && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the source
